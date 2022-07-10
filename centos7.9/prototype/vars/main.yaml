@@ -1,0 +1,9 @@
+---
+gpu_presence: true # only true or false
+
+client_home_directory: /root
+nvidia_driver: /root/files/NVIDIA-Linux-x86_64-510.54.run
+cuda_runfile: /root/files/cuda_11.2.0_460.27.04_linux.run
+cudnn_archive: /root/files/cudnn-11.2-linux-x64-v8.1.0.77.tgz
+docker_script: docker_nvidiaDocker_install_CentOS7.9.sh
+initramfs_image: initramfs-3.10.0-1160.el7.x86_64

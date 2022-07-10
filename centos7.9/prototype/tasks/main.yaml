@@ -1,0 +1,11 @@
+---
+- name: setup gpu server CentOS 7.9
+  when: >
+    (ansible_distribution == 'CentOS' and ansible_distribution_version == '7.9')
+
+     and
+
+    (gpu_presence == true)
+  include_tasks: centos_7.9.yaml
+  register: output
+- debug: var=output.stdout_lines

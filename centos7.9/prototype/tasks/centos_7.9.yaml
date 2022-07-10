@@ -1,0 +1,171 @@
+- name: copy nvidia driver / cuda runfile / cudnn archive / docker script
+  copy:
+    src: "{{ item }}"
+    dest: "{{ client_home_directory }}"
+    mode: 0777
+  with_items:
+    - "{{ nvidia_driver }}"
+    - "{{ cuda_runfile }}"
+    - "{{ cudnn_archive }}"
+    - "{{ docker_script }}"
+  register: output
+- debug: var=output.stdout_lines
+
+- name: install net-tools
+  yum:
+    name:
+      - net-tools
+    state: present
+  register: output
+- debug: var=output.stdout_lines
+
+#- name: make mount point directory
+#  file:
+#    path: /data
+#    state: directory
+#  register: output
+#- debug: var=output.stdout_lines
+
+#- name: format disk
+#  parted:
+#    device: /dev/sda
+#    label: gpt
+#    number: 1
+#    state: present
+#    part_start: "0%"
+#    part_end: "100%"
+#  register: output
+#- debug: var=output.stdout_lines
+ 
+#- name: filesystem disk
+#  filesystem:
+#    dev: /dev/sda1
+#    fstype: xfs
+#  register: output
+#- debug: var=output.stdout_lines
+
+#- name: mount disk
+#  mount:
+#    fstype: xfs
+#    src: /dev/sda1
+#    path: /data
+#    state: mounted
+#  register: output
+#- debug: var=output.stdout_lines
+
+- name: upgrade all packages
+  yum:
+    name: '*'
+    state: latest
+  register: output
+- debug: var=output.stdout_lines
+
+- name: install prerequisite packages
+  yum:
+    name:
+      - wget
+      - epel-release
+      - kernel-devel
+    state: present
+  register: output
+- debug: var=output.stdout_lines
+
+- name: install dkms
+  yum:
+    name: 
+      - dkms
+    state: present
+  register: output
+- debug: var=output.stdout_lines
+
+- name: disable nouveau
+  replace:
+    path: /etc/default/grub
+    regexp: "GRUB_CMDLINE_LINUX=\"rhgb quiet\""
+    replace: "GRUB_CMDLINE_LINUX=\"rhgb quiet nouveau.modeset=0 modprobe.blacklist=nouveau rd.driver.blacklist=nouveau\""
+  register: output
+- debug: var=output.stdout_lines
+
+- name: create blacklist.conf file
+  file:
+    path: /etc/modprobe.d/blacklist.conf
+    state: touch
+  register: output
+- debug: var=output.stdout_lines
+
+- name: add block in blacklist.conf
+  blockinfile:
+    path: /etc/modprobe.d/blacklist.conf
+    block: |
+      blacklist nouveau
+      options nouveau modeset=0
+  register: output
+- debug: var=output.stdout_lines
+ 
+- name: copy older initramfs image to backup file
+  copy:
+    remote_src: yes
+    src: "/boot/{{ initramfs_image }}.img"
+    dest: "/boot/{{ initramfs_image }}-backup.img"
+    mode: 0600
+  register: output
+- debug: var=output.stdout_lines
+
+- name: delete older initramfs image
+  file:
+    path: "/boot/{{ initramfs_image }}.img"
+    state: absent
+  register: output
+- debug: var=output.stdout_lines
+
+- name: generate new initramfs image
+  command: dracut
+  register: output
+- debug: var=output.stdout_lines
+
+- name: apply changes of /etc/default/grub
+  command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  register: output
+- debug: var=output.stdout_lines
+
+- name: apply changes of /etc/default/grub
+  command: grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg
+  register: output
+- debug: var=output.stdout_lines
+
+- name: insert cuda env variable into .bashrc
+  blockinfile:
+    path: "{{ client_home_directory }}/.bashrc"
+    block: |
+      ## CUDA and cuDNN paths
+      export PATH=/usr/local/cuda/bin:${PATH}
+      export LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
+  register: output
+- debug: var=output.stdout_lines
+
+- name: apply .bashrc
+  shell: "source {{ client_home_directory }}/.bashrc"
+  args:
+    executable: /bin/bash
+  register: output
+- debug: var=output.stdout_lines
+  
+- name: unzip cudnn archive
+  unarchive:
+    src: "{{ cudnn_archive }}"
+    dest: "{{ client_home_directory }}"
+  register: output
+- debug: var=output.stdout_lines
+
+- name: install docker && nvidia docker 
+  command: "{{ client_home_directory }}/{{ docker_script }}"
+  register: output
+- debug: var=output.stdout_lines
+
+- name: restart docker service
+  systemd:
+    state: restarted
+    name: docker
+  register: output
+- debug: var=output.stdout_lines
+
