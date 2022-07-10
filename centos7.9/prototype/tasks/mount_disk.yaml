@@ -1,0 +1,33 @@
+- name: make mount point directory
+  file:
+    path: /data
+    state: directory
+  register: output
+- debug: var=output.stdout_lines
+
+- name: format disk
+  parted:
+    device: /dev/sdb
+    label: gpt
+    number: 1
+    state: present
+    part_start: "0%"
+    part_end: "100%"
+  register: output
+- debug: var=output.stdout_lines
+
+- name: filesystem disk
+  filesystem:
+    dev: /dev/sdb1
+    fstype: xfs
+  register: output
+- debug: var=output.stdout_lines
+
+- name: mount disk
+  mount:
+    fstype: xfs
+    src: /dev/sdb1
+    path: /data
+    state: mounted
+  register: output
+- debug: var=output.stdout_line

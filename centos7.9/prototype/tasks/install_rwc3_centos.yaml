@@ -1,0 +1,20 @@
+- name: install unzip package
+  yum:
+    name: unzip
+    state: present
+  register: output
+- debug: var=output.stdout_lines
+
+- name: unarchive rwc3 file
+  unarchive:
+    src: "{{ file_path }}/{{ rwc3_archive }}"
+    dest: "{{ client_user_home }}"
+  register: output
+- debug: var=output.stdout_lines
+
+- name: make install_deb.sh executable
+  file:
+    path: "{{ client_user_home}}/Intel_RWC3_Linux_007.019.006.000/x64/install.sh"
+    mode: 0777
+  register: output
+- debug: var=output.stdout_lines
