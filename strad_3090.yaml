@@ -1,0 +1,5 @@
+---
+- name: setup stradvision 3090 server
+  hosts: rtx3090
+  roles:
+    - role: ~/ansible_setup_server_role/strad_3090/prototype

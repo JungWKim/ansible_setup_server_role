@@ -16,6 +16,7 @@
       - net-tools
       - xfsprogs
       - nfs-common
+    update_cache: yes
   register: output
 - debug: var=output.stdout_lines
 

@@ -1,0 +1,12 @@
+- name: copy nvidia container toolkit script
+  copy:
+    src: "{{ file_path }}/{{ nvidia_container_toolkit_script }}"
+    dest: "{{ client_user_home }}"
+    mode: 0777
+  register: output
+- debug: var=output.stdout_lines
+
+- name: execute docker script
+  command: "{{ client_user_home }}/{{ nvidia_container_toolkit_script }}"
+  register: output
+- debug: var=output.stdout_lines
