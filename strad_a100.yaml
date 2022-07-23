@@ -1,5 +1,0 @@
----
-- name: setup stradvision a100 server
-  hosts: a100
-  roles:
-    - role: ./strad_a100/prototype

@@ -1,5 +1,0 @@
----
-- name: setup stradvision 3090 server
-  hosts: rtx3090
-  roles:
-    - role: ./strad_3090/prototype
