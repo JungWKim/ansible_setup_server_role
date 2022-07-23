@@ -7,8 +7,6 @@
 
     (ansible_distribution_version != '20.04')
   meta: end_play
-  register: output
-- debug: var=output.stdout_lines
 
 - name: install basic packages
   apt:
@@ -17,40 +15,26 @@
       - xfsprogs
       - nfs-common
     update_cache: yes
-  register: output
-- debug: var=output.stdout_lines
 
 - name: prevent package auto upgrade
   command: sed -i 's/1/0/g'  /etc/apt/apt.conf.d/20auto-upgrades
-  register: output
-- debug: var=output.stdout_lines
 
 - name: mount disks
   when: disk_presence == true
   include_tasks: mount_disk.yaml
-  register: output
-- debug: var=output.stdout_lines
 
 - name: install nvidia driver / cuda / cudnn
   when: gpu_presence == true
   include_tasks: install_gpu_drivers.yaml
-  register: output
-- debug: var=output.stdout_lines
 
 - name: install docker
   when: docker_install == true
   include_tasks: install_docker.yaml
-  register: output
-- debug: var=output.stdout_lines
 
 - name: install nvidia container toolkit
   when: nvidia_docker_install == true
   include_tasks: install_nvidia_container_toolkit.yaml
-  register: output
-- debug: var=output.stdout_lines
 
 - name: install intel raid web console
   when: intel_raid_presence == true
   include_tasks: install_rwc3_debian.yaml
-  register: output
-- debug: var=output.stdout_lines

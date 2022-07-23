@@ -3,10 +3,6 @@
     src: "{{ file_path }}/{{ docker_script }}"
     dest: "{{ client_user_home }}"
     mode: 0777
-  register: output
-- debug: var=output.stdout_lines
 
 - name: execute docker script
   command: "{{ client_user_home }}/{{ docker_script }}"
-  register: output
-- debug: var=output.stdout_lines

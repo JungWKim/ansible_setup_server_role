@@ -5,8 +5,6 @@
       - linux-headers-generic
       - dkms
     state: present
-  register: output
-- debug: var=output.stdout_lines
 
 - name: add block in blacklist
   blockinfile:
@@ -17,27 +15,19 @@
       options nouveau modeset=0
       alias nouveau off
       alias lbm-nouveau off
-  register: output
-- debug: var=output.stdout_lines
 
 - name: create nouveau-kms.conf
   file:
     path: /etc/modprobe.d/nouveau-kms.conf
     state: touch
-  register: output
-- debug: var=output.stdout_lines
 
 - name: delete nouveau configuration
   lineinfile:
     path: /etc/modprobe.d/nouveau-kms.conf
     line: options nouveau modeset=0
-  register: output
-- debug: var=output.stdout_lines
  
 - name: kernel rebuild
   shell: update-initramfs -u
-  register: output
-- debug: var=output.stdout_lines
 
 - name: insert cuda env variable into .bashrc
   blockinfile:
@@ -46,15 +36,11 @@
       ## CUDA and cuDNN paths
       export PATH=/usr/local/cuda/bin:${PATH}
       export LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
-  register: output
-- debug: var=output.stdout_lines
 
 - name: apply .bashrc
   shell: "source {{ client_user_home }}/.bashrc"
   args:
     executable: /bin/bash
-  register: output
-- debug: var=output.stdout_lines
 
 - name: copy nvidia driver / cuda runfile / cudnn archive
   copy:
@@ -65,12 +51,8 @@
   - "{{ file_path }}/{{ nvidia_driver }}"
   - "{{ file_path }}/{{ cuda_runfile }}"
   - "{{ file_path }}/{{ cudnn_archive }}"
-  register: output
-- debug: var=output.stdout_lines
 
-#- name: unzip cudnn archive
-#  unarchive:
-#    src: "{{ file_path }}/{{ cudnn_archive }}"
-#    dest: "{{ client_user_home }}"
-#  register: output
-#- debug: var=output.stdout_lines
+- name: unzip cudnn archive
+  unarchive:
+    src: "{{ file_path }}/{{ cudnn_archive }}"
+    dest: "{{ client_user_home }}"

@@ -7,8 +7,6 @@
 
     (ansible_distribution_version != '7.9')
   meta: end_play
-  register: output
-- debug: var=output.stdout_lines
 
 - name: install basic packages
   yum:
@@ -16,35 +14,23 @@
       - net-tools
       - createrepo
       - nfs-utils
-  register: output
-- debug: var=output.stdout_lines
 
 - name: mount disks
   when: disk_presence == true
   include_tasks: mount_disk.yaml
-  register: output
-- debug: var=output.stdout_lines
 
 - name: install nvidia driver / cuda / cudnn
   when: gpu_presence == true
   include_tasks: install_gpu_drivers.yaml
-  register: output
-- debug: var=output.stdout_lines
 
 - name: install docker
   when: docker_install == true
   include_tasks: install_docker.yaml
-  register: output
-- debug: var=output.stdout_lines
 
 - name: install nvidia container toolkit
   when: nvidia_docker_install == true
   include_tasks: install_nvidia_container_toolkit.yaml
-  register: output
-- debug: var=output.stdout_lines
 
 - name: install intel raid web console
   when: intel_raid_presence == true
   include_tasks: install_rwc3_centos.yaml
-  register: output
-- debug: var=output.stdout_lines
