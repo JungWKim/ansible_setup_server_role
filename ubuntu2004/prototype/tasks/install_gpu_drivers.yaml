@@ -48,9 +48,14 @@
     dest: "{{ client_user_home }}"
     mode: 0777
   with_items:
-  - "{{ file_path }}/{{ nvidia_driver }}"
   - "{{ file_path }}/{{ cuda_runfile }}"
   - "{{ file_path }}/{{ cudnn_archive }}"
+
+- name: install prerequisite packages
+  apt:
+    pkg:
+      - nvidia-driver-510-server
+    state: present
 
 - name: unzip cudnn archive
   unarchive:
