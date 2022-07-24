@@ -52,6 +52,12 @@
   - "{{ file_path }}/{{ cuda_runfile }}"
   - "{{ file_path }}/{{ cudnn_archive }}"
 
+- name: install nvidia-driver package
+  apt:
+    pkg:
+      - nvidia-driver-510-server
+    state: present
+
 - name: unzip cudnn archive
   unarchive:
     src: "{{ file_path }}/{{ cudnn_archive }}"

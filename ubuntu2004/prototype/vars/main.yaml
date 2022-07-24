@@ -8,7 +8,7 @@ intel_raid_presence: true
 file_path: /root/files
 client_user_home: /home/gpuadmin
 cuda_runfile: cuda_11.6.0_510.39.01_linux.run
-cudnn_archive: cudnn-11.2-linux-x64-v8.1.0.77.tgz
+cudnn_archive: cudnn-linux-x86_64-8.4.0.27_cuda11.6-archive.tar.xz
 docker_script: install_docker_ubuntu.sh
 nvidia_container_toolkit_script: install_nvidia_container_toolkit_ubuntu.sh
 rwc3_archive: Intel_RWC3_Linux_007.019.006.000.zip

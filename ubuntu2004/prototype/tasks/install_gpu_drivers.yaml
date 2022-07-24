@@ -51,10 +51,15 @@
   - "{{ file_path }}/{{ cuda_runfile }}"
   - "{{ file_path }}/{{ cudnn_archive }}"
 
-- name: install prerequisite packages
+- name: install nvidia driver package
   apt:
     pkg:
       - nvidia-driver-510-server
+    state: present
+
+- name: insert nvidia kernel module
+  modprobe:
+    name: nvidia
     state: present
 
 - name: unzip cudnn archive
